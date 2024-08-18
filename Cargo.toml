@@ -1,0 +1,8 @@
+[package]
+name = "athena"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+reqwest = "0.12.5"
+serde = "1.0.208"
