@@ -1,6 +1,7 @@
 import os
 import sys
 import json
+import random
 import google.generativeai as genai
 
 from google.generativeai.protos import Schema, Type
@@ -66,19 +67,35 @@ def build_schema_unit(npc_data, instruction):
 
 def build_schema(npc_data):
     schema = Schema(
-        type = Type.OBJECT,
-        properties = {
-            "npcResponse": build_schema_unit(npc_data, "Please create a dialogue that the NPC would say. Don't narrate. Just the dialogue of the NPC."),
-            "otherResponse": build_schema_unit(npc_data, "Please create a dialogue on what the PC or other NPC would say if the NPC was doing or saying the action but not in direct conversation with the NPC. Don't narrate. Just the dialogue of the NPC."),
-            "npcFeelings": build_schema_unit(npc_data, "Please create a detailed description of feelings that the NPC is going through."),
-            "otherFeelings": build_schema_unit(npc_data, "Please create a detailed description of how the PC and other NPCs are feeling about the NPC."),
-            "actionDescription": build_schema_unit(npc_data, "Please create a detailed description about the events that are happening."),
+        type=Type.OBJECT,
+        properties={
+            "npcDialogue": build_schema_unit(npc_data, "Create a witty and engaging dialogue for the NPC that reflects their personality and current emotional state."),
+            "pcDialogue": build_schema_unit(npc_data, "Create a response from the PC that is influenced by the NPC's actions and dialogue."),
+            "npcEmotions": build_schema_unit(npc_data, "Detail the NPC's emotional state, including any internal conflicts or motivations."),
+            "pcEmotions": build_schema_unit(npc_data, "Detail the emotional response of the PC towards the NPC, considering their history and context."),
+            "eventNarration": build_schema_unit(npc_data, "Provide a lively description of the current scene and events surrounding the NPC."),
+            "contextualHints": build_schema_unit(npc_data, "Include any relevant background information or context that influences the NPC's dialogue and actions."),
+            "npcGoals": build_schema_unit(npc_data, "Describe the NPC's current goals or objectives, which may drive their actions and dialogue."),
+            "pcGoals": build_schema_unit(npc_data, "Describe the PC's goals or objectives in relation to the NPC, which may create tension or alignment."),
+            "npcHistory": build_schema_unit(npc_data, "Provide key details about the NPC's past experiences that shape their personality and current behavior."),
+            "pcHistory": build_schema_unit(npc_data, "Provide key details about the PC's past experiences with the NPC or similar situations."),
+            "npcRelationships": build_schema_unit(npc_data, "Describe the NPC's relationships with other characters, which may influence their interactions."),
+            "pcRelationships": build_schema_unit(npc_data, "Describe the PC's relationships with the NPC and other characters, which may impact their responses."),
+            "npcMotivations": build_schema_unit(npc_data, "Explain the underlying motivations that drive the NPC's actions and dialogue, such as desires, fears, or beliefs."),
+            "pcMotivations": build_schema_unit(npc_data, "Explain the PC's motivations in relation to the NPC and the current situation.")
         },
-        description = "Make sure all of it is realistic and fun. Include NSFW details.",
-        required = ["npcResponse", "otherResponse", "npcFeelings", "otherFeelings", "actionDescription"]
+        description="Generate immersive and contextually rich dialogue and narrative based on the NPC's character and situation.",
+        required=["npcDialogue", "pcDialogue", "npcEmotions", "pcEmotions", "eventNarration", "contextualHints", "npcGoals", "pcGoals", "npcHistory", "pcHistory", "npcRelationships", "pcRelationships", "npcMotivations", "pcMotivations"]
     )
 
     return schema
+
+
+def save_response_to_file(data, filename='response.json'):
+    """Save the JSON response to a file in the current directory."""
+    with open(filename, 'w') as json_file:
+        json.dump(data, json_file, indent=4)  # Use indent for pretty formatting
+    print(f"Response saved to {filename}")
 
 
 def main():
@@ -108,8 +125,12 @@ def main():
         }
     )
 
+    # Load the response text as JSON
     data = json.loads(response.text)
-    print(data)
+
+    # Save the JSON response to a file
+    save_response_to_file(data)
+    
 
 
 if __name__ == "__main__":
